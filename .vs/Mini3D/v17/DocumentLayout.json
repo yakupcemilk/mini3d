@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Yakup Cemil\\Projeler\\Inceleme\\mini3d\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{433E9031-0101-4ADF-A6DA-283375FD1898}|Mini3D.vcxproj|C:\\Users\\Yakup Cemil\\Projeler\\Inceleme\\mini3d\\mini3d.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{433E9031-0101-4ADF-A6DA-283375FD1898}|Mini3D.vcxproj|solutionrelative:mini3d.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "mini3d.c",
+              "DocumentMoniker": "C:\\Users\\Yakup Cemil\\Projeler\\Inceleme\\mini3d\\mini3d.c",
+              "RelativeDocumentMoniker": "mini3d.c",
+              "ToolTip": "C:\\Users\\Yakup Cemil\\Projeler\\Inceleme\\mini3d\\mini3d.c",
+              "RelativeToolTip": "mini3d.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-07-29T19:46:36.691Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

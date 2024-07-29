@@ -13,7 +13,10 @@
 //   2015.8.09  skywind  rewrite with more comment
 //   2015.8.12  skywind  adjust interfaces for clearity 
 // 
+// Chinese to English Translation By: Yakup Cemil Kayabaş
+// 
 //=====================================================================
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -25,7 +28,7 @@
 typedef unsigned int IUINT32;
 
 //=====================================================================
-// 数学库：此部分应该不用详解，熟悉 D3D 矩阵变换即可
+// Mathematics library: This part should not require detailed explanation, just be familiar with D3D matrix transformation
 //=====================================================================
 typedef struct { float m[4][4]; } matrix_t;
 typedef struct { float x, y, z, w; } vector_t;
@@ -33,7 +36,7 @@ typedef vector_t point_t;
 
 int CMID(int x, int min, int max) { return (x < min)? min : ((x > max)? max : x); }
 
-// 计算插值：t 为 [0, 1] 之间的数值
+// Compute interpolation: t is a value between [0, 1]
 float interp(float x1, float x2, float t) { return x1 + (x2 - x1) * t; }
 
 // | v |
@@ -58,12 +61,12 @@ void vector_sub(vector_t *z, const vector_t *x, const vector_t *y) {
 	z->w = 1.0;
 }
 
-// 矢量点乘
+// vector dot product
 float vector_dotproduct(const vector_t *x, const vector_t *y) {
 	return x->x * y->x + x->y * y->y + x->z * y->z;
 }
 
-// 矢量叉乘
+// vector cross product
 void vector_crossproduct(vector_t *z, const vector_t *x, const vector_t *y) {
 	float m1, m2, m3;
 	m1 = x->y * y->z - x->z * y->y;
@@ -75,7 +78,7 @@ void vector_crossproduct(vector_t *z, const vector_t *x, const vector_t *y) {
 	z->w = 1.0f;
 }
 
-// 矢量插值，t取值 [0, 1]
+// Vector interpolation, t value [0, 1]
 void vector_interp(vector_t *z, const vector_t *x1, const vector_t *x2, float t) {
 	z->x = interp(x1->x, x2->x, t);
 	z->y = interp(x1->y, x2->y, t);
@@ -83,7 +86,7 @@ void vector_interp(vector_t *z, const vector_t *x1, const vector_t *x2, float t)
 	z->w = 1.0f;
 }
 
-// 矢量归一化
+// Vector normalization
 void vector_normalize(vector_t *v) {
 	float length = vector_length(v);
 	if (length != 0.0f) {
@@ -160,7 +163,7 @@ void matrix_set_zero(matrix_t *m) {
 	m->m[3][0] = m->m[3][1] = m->m[3][2] = m->m[3][3] = 0.0f;
 }
 
-// 平移变换
+// Translation transformation
 void matrix_set_translate(matrix_t *m, float x, float y, float z) {
 	matrix_set_identity(m);
 	m->m[3][0] = x;
@@ -168,7 +171,7 @@ void matrix_set_translate(matrix_t *m, float x, float y, float z) {
 	m->m[3][2] = z;
 }
 
-// 缩放变换
+// Scale transformation
 void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 	matrix_set_identity(m);
 	m->m[0][0] = x;
@@ -176,7 +179,7 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 	m->m[2][2] = z;
 }
 
-// 旋转矩阵
+// Rotation matrix
 void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta) {
 	float qsin = (float)sin(theta * 0.5f);
 	float qcos = (float)cos(theta * 0.5f);
@@ -200,7 +203,7 @@ void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta) {
 	m->m[3][3] = 1.0f;
 }
 
-// 设置摄像机
+// Set up camera
 void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, const vector_t *up) {
 	vector_t xaxis, yaxis, zaxis;
 
@@ -242,25 +245,25 @@ void matrix_set_perspective(matrix_t *m, float fovy, float aspect, float zn, flo
 
 
 //=====================================================================
-// 坐标变换
+// Coordinate transformation
 //=====================================================================
 typedef struct { 
-	matrix_t world;         // 世界坐标变换
-	matrix_t view;          // 摄影机坐标变换
-	matrix_t projection;    // 投影变换
+	matrix_t world;         // World coordinate transformation
+	matrix_t view;          // Camera coordinate transformation
+	matrix_t projection;    // Projective transformation
 	matrix_t transform;     // transform = world * view * projection
-	float w, h;             // 屏幕大小
+	float w, h;             // Screen size
 }	transform_t;
 
 
-// 矩阵更新，计算 transform = world * view * projection
+// Matrix update, calculation transform = world * view * projection
 void transform_update(transform_t *ts) {
 	matrix_t m;
 	matrix_mul(&m, &ts->world, &ts->view);
 	matrix_mul(&ts->transform, &m, &ts->projection);
 }
 
-// 初始化，设置屏幕长宽
+// Initialization, set screen length and width
 void transform_init(transform_t *ts, int width, int height) {
 	float aspect = (float)width / ((float)height);
 	matrix_set_identity(&ts->world);
@@ -271,12 +274,12 @@ void transform_init(transform_t *ts, int width, int height) {
 	transform_update(ts);
 }
 
-// 将矢量 x 进行 project 
+// Convert the vector x project 
 void transform_apply(const transform_t *ts, vector_t *y, const vector_t *x) {
 	matrix_apply(y, x, &ts->transform);
 }
 
-// 检查齐次坐标同 cvv 的边界用于视锥裁剪
+// Check bounds of homogeneous coordinates with cvv for frustum clipping
 int transform_check_cvv(const vector_t *v) {
 	float w = v->w;
 	int check = 0;
@@ -289,7 +292,7 @@ int transform_check_cvv(const vector_t *v) {
 	return check;
 }
 
-// 归一化，得到屏幕坐标
+// Normalize to get screen coordinates
 void transform_homogenize(const transform_t *ts, vector_t *y, const vector_t *x) {
 	float rhw = 1.0f / x->w;
 	y->x = (x->x * rhw + 1.0f) * ts->w * 0.5f;
@@ -300,7 +303,7 @@ void transform_homogenize(const transform_t *ts, vector_t *y, const vector_t *x)
 
 
 //=====================================================================
-// 几何计算：顶点、扫描线、边缘、矩形、步长计算
+// Geometric calculations: vertices, scan lines, edges, rectangles, step calculations
 //=====================================================================
 typedef struct { float r, g, b; } color_t;
 typedef struct { float u, v; } texcoord_t;
@@ -358,7 +361,7 @@ void vertex_add(vertex_t *y, const vertex_t *x) {
 	y->color.b += x->color.b;
 }
 
-// 根据三角形生成 0-2 个梯形，并且返回合法梯形的数量
+// Generate 0-2 trapezoids based on triangles and return the number of legal trapezoids
 int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, 
 	const vertex_t *p2, const vertex_t *p3) {
 	const vertex_t *p;
@@ -423,7 +426,7 @@ int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1,
 	return 2;
 }
 
-// 按照 Y 坐标计算出左右两条边纵坐标等于 Y 的顶点
+// Calculate the vertices whose vertical coordinates of the left and right sides are equal to Y according to the Y coordinate.
 void trapezoid_edge_interp(trapezoid_t *trap, float y) {
 	float s1 = trap->left.v2.pos.y - trap->left.v1.pos.y;
 	float s2 = trap->right.v2.pos.y - trap->right.v1.pos.y;
@@ -433,7 +436,7 @@ void trapezoid_edge_interp(trapezoid_t *trap, float y) {
 	vertex_interp(&trap->right.v, &trap->right.v1, &trap->right.v2, t2);
 }
 
-// 根据左右两边的端点，初始化计算出扫描线的起点和步长
+// Based on the endpoints on the left and right sides, initialize and calculate the starting point and step size of the scan line.
 void trapezoid_init_scan_line(const trapezoid_t *trap, scanline_t *scanline, int y) {
 	float width = trap->right.v.pos.x - trap->left.v.pos.x;
 	scanline->x = (int)(trap->left.v.pos.x + 0.5f);
@@ -446,29 +449,29 @@ void trapezoid_init_scan_line(const trapezoid_t *trap, scanline_t *scanline, int
 
 
 //=====================================================================
-// 渲染设备
+// Rendering device
 //=====================================================================
 typedef struct {
-	transform_t transform;      // 坐标变换器
-	int width;                  // 窗口宽度
-	int height;                 // 窗口高度
-	IUINT32 **framebuffer;      // 像素缓存：framebuffer[y] 代表第 y行
-	float **zbuffer;            // 深度缓存：zbuffer[y] 为第 y行指针
-	IUINT32 **texture;          // 纹理：同样是每行索引
-	int tex_width;              // 纹理宽度
-	int tex_height;             // 纹理高度
-	float max_u;                // 纹理最大宽度：tex_width - 1
-	float max_v;                // 纹理最大高度：tex_height - 1
-	int render_state;           // 渲染状态
-	IUINT32 background;         // 背景颜色
-	IUINT32 foreground;         // 线框颜色
+	transform_t transform;      // Coordinate transformer
+	int width;                  // Window width
+	int height;                 // Window height
+	IUINT32 **framebuffer;      // Pixel buffer: framebuffer[y] represents the yth line
+	float **zbuffer;            // Depth buffer: zbuffer[y] is the y-th row pointer
+	IUINT32 **texture;          // Texture: Same as each row index
+	int tex_width;              // Doku genişliği
+	int tex_height;             // Doku yüksekliği
+	float max_u;                // Dokunun maksimum genişliği: tex_width - 1
+	float max_v;                // Dokunun maksimum yüksekliği: tex_height - 1
+	int render_state;           // Oluşturma durumu
+	IUINT32 background;         // Arka plan rengi
+	IUINT32 foreground;         // Wireframe color
 }	device_t;
 
-#define RENDER_STATE_WIREFRAME      1		// 渲染线框
-#define RENDER_STATE_TEXTURE        2		// 渲染纹理
-#define RENDER_STATE_COLOR          4		// 渲染颜色
+#define RENDER_STATE_WIREFRAME      1		// Render wireframe
+#define RENDER_STATE_TEXTURE        2		// Render texture
+#define RENDER_STATE_COLOR          4		// Render color
 
-// 设备初始化，fb为外部帧缓存，非 NULL 将引用外部帧缓存（每行 4字节对齐）
+// Device initialization, fb is the external frame buffer, non-NULL will refer to the external frame buffer (each line is 4 bytes aligned)
 void device_init(device_t *device, int width, int height, void *fb) {
 	int need = sizeof(void*) * (height * 2 + 1024) + width * height * 8;
 	char *ptr = (char*)malloc(need + 64);
@@ -503,7 +506,7 @@ void device_init(device_t *device, int width, int height, void *fb) {
 	device->render_state = RENDER_STATE_WIREFRAME;
 }
 
-// 删除设备
+// Remove device
 void device_destroy(device_t *device) {
 	if (device->framebuffer) 
 		free(device->framebuffer);
@@ -512,12 +515,12 @@ void device_destroy(device_t *device) {
 	device->texture = NULL;
 }
 
-// 设置当前纹理
+// Set current texture
 void device_set_texture(device_t *device, void *bits, long pitch, int w, int h) {
 	char *ptr = (char*)bits;
 	int j;
 	assert(w <= 1024 && h <= 1024);
-	for (j = 0; j < h; ptr += pitch, j++) 	// 重新计算每行纹理的指针
+	for (j = 0; j < h; ptr += pitch, j++) 	// Recalculate the texture pointer for each row
 		device->texture[j] = (IUINT32*)ptr;
 	device->tex_width = w;
 	device->tex_height = h;
@@ -525,7 +528,7 @@ void device_set_texture(device_t *device, void *bits, long pitch, int w, int h) 
 	device->max_v = (float)(h - 1);
 }
 
-// 清空 framebuffer 和 zbuffer
+// Clear framebuffer and zbuffer
 void device_clear(device_t *device, int mode) {
 	int y, x, height = device->height;
 	for (y = 0; y < device->height; y++) {
@@ -541,14 +544,14 @@ void device_clear(device_t *device, int mode) {
 	}
 }
 
-// 画点
+// Painting point
 void device_pixel(device_t *device, int x, int y, IUINT32 color) {
 	if (((IUINT32)x) < (IUINT32)device->width && ((IUINT32)y) < (IUINT32)device->height) {
 		device->framebuffer[y][x] = color;
 	}
 }
 
-// 绘制线段
+// Draw line segment
 void device_draw_line(device_t *device, int x1, int y1, int x2, int y2, IUINT32 c) {
 	int x, y, rem = 0;
 	if (x1 == x2 && y1 == y2) {
@@ -592,7 +595,7 @@ void device_draw_line(device_t *device, int x1, int y1, int x2, int y2, IUINT32 
 	}
 }
 
-// 根据坐标读取纹理
+// Read texture based on coordinates
 IUINT32 device_texture_read(const device_t *device, float u, float v) {
 	int x, y;
 	u = u * device->max_u;
@@ -606,10 +609,10 @@ IUINT32 device_texture_read(const device_t *device, float u, float v) {
 
 
 //=====================================================================
-// 渲染实现
+// Rendering implementation
 //=====================================================================
 
-// 绘制扫描线
+// Draw scan lines
 void device_draw_scanline(device_t *device, scanline_t *scanline) {
 	IUINT32 *framebuffer = device->framebuffer[scanline->y];
 	float *zbuffer = device->zbuffer[scanline->y];
@@ -648,7 +651,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline) {
 	}
 }
 
-// 主渲染函数
+// Main rendering function
 void device_render_trap(device_t *device, trapezoid_t *trap) {
 	scanline_t scanline;
 	int j, top, bottom;
@@ -664,29 +667,29 @@ void device_render_trap(device_t *device, trapezoid_t *trap) {
 	}
 }
 
-// 根据 render_state 绘制原始三角形
+// Draw the original triangle according to render_state
 void device_draw_primitive(device_t *device, const vertex_t *v1, 
 	const vertex_t *v2, const vertex_t *v3) {
 	point_t p1, p2, p3, c1, c2, c3;
 	int render_state = device->render_state;
 
-	// 按照 Transform 变化
+	// Change according to Transform
 	transform_apply(&device->transform, &c1, &v1->pos);
 	transform_apply(&device->transform, &c2, &v2->pos);
 	transform_apply(&device->transform, &c3, &v3->pos);
 
-	// 裁剪，注意此处可以完善为具体判断几个点在 cvv内以及同cvv相交平面的坐标比例
-	// 进行进一步精细裁剪，将一个分解为几个完全处在 cvv内的三角形
+	// Cropping, note that this can be improved to specifically determine the coordinate ratio of several points within the cvv and the plane that intersects the cvv
+	// Perform further fine-cutting to decompose one into several triangles that are completely within cvv
 	if (transform_check_cvv(&c1) != 0) return;
 	if (transform_check_cvv(&c2) != 0) return;
 	if (transform_check_cvv(&c3) != 0) return;
 
-	// 归一化
+	// Normalized
 	transform_homogenize(&device->transform, &p1, &c1);
 	transform_homogenize(&device->transform, &p2, &c2);
 	transform_homogenize(&device->transform, &p3, &c3);
 
-	// 纹理或者色彩绘制
+	// Doku veya renk boyama
 	if (render_state & (RENDER_STATE_TEXTURE | RENDER_STATE_COLOR)) {
 		vertex_t t1 = *v1, t2 = *v2, t3 = *v3;
 		trapezoid_t traps[2];
@@ -699,18 +702,18 @@ void device_draw_primitive(device_t *device, const vertex_t *v1,
 		t2.pos.w = c2.w;
 		t3.pos.w = c3.w;
 		
-		vertex_rhw_init(&t1);	// 初始化 w
-		vertex_rhw_init(&t2);	// 初始化 w
-		vertex_rhw_init(&t3);	// 初始化 w
+		vertex_rhw_init(&t1);	// initialize w
+		vertex_rhw_init(&t2);	// initialize w
+		vertex_rhw_init(&t3);	// initialize w
 		
-		// 拆分三角形为0-2个梯形，并且返回可用梯形数量
+		// Splits the triangle into 0-2 trapezoids and returns the number of available trapezoids
 		n = trapezoid_init_triangle(traps, &t1, &t2, &t3);
 
 		if (n >= 1) device_render_trap(device, &traps[0]);
 		if (n >= 2) device_render_trap(device, &traps[1]);
 	}
 
-	if (render_state & RENDER_STATE_WIREFRAME) {		// 线框绘制
+	if (render_state & RENDER_STATE_WIREFRAME) {		// Wireframe drawing
 		device_draw_line(device, (int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y, device->foreground);
 		device_draw_line(device, (int)p1.x, (int)p1.y, (int)p3.x, (int)p3.y, device->foreground);
 		device_draw_line(device, (int)p3.x, (int)p3.y, (int)p2.x, (int)p2.y, device->foreground);
@@ -719,22 +722,22 @@ void device_draw_primitive(device_t *device, const vertex_t *v1,
 
 
 //=====================================================================
-// Win32 窗口及图形绘制：为 device 提供一个 DibSection 的 FB
+// Win32 window and graphics drawing: provide a DibSection FB for device
 //=====================================================================
 int screen_w, screen_h, screen_exit = 0;
 int screen_mx = 0, screen_my = 0, screen_mb = 0;
-int screen_keys[512];	// 当前键盘按下状态
-static HWND screen_handle = NULL;		// 主窗口 HWND
-static HDC screen_dc = NULL;			// 配套的 HDC
+int screen_keys[512];	// Current keyboard press status
+static HWND screen_handle = NULL;		// Main window HWND
+static HDC screen_dc = NULL;			// Matching HDC
 static HBITMAP screen_hb = NULL;		// DIB
-static HBITMAP screen_ob = NULL;		// 老的 BITMAP
+static HBITMAP screen_ob = NULL;		// OLD BITMAP
 unsigned char *screen_fb = NULL;		// frame buffer
 long screen_pitch = 0;
 
-int screen_init(int w, int h, const TCHAR *title);	// 屏幕初始化
-int screen_close(void);								// 关闭屏幕
-void screen_dispatch(void);							// 处理消息
-void screen_update(void);							// 显示 FrameBuffer
+int screen_init(int w, int h, const TCHAR *title);	// Screen initialization
+int screen_close(void);								// Turn off screen
+void screen_dispatch(void);							// Process messages
+void screen_update(void);							// Show FrameBuffer
 
 // win32 event handler
 static LRESULT screen_events(HWND, UINT, WPARAM, LPARAM);	
@@ -744,7 +747,7 @@ static LRESULT screen_events(HWND, UINT, WPARAM, LPARAM);
 #pragma comment(lib, "user32.lib")
 #endif
 
-// 初始化窗口并设置标题
+// Initialize the window and set the title
 int screen_init(int w, int h, const TCHAR *title) {
 	WNDCLASS wc = { CS_BYTEALIGNCLIENT, (WNDPROC)screen_events, 0, 0, 0, 
 		NULL, NULL, NULL, NULL, _T("SCREEN3.1415926") };
@@ -848,7 +851,7 @@ void screen_update(void) {
 
 
 //=====================================================================
-// 主程序
+// Main Program
 //=====================================================================
 vertex_t mesh[8] = {
 	{ { -1, -1,  1, 1 }, { 0, 0 }, { 1.0f, 0.2f, 0.2f }, 1 },
