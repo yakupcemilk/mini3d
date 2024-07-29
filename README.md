@@ -64,11 +64,6 @@
 
 - [RenderHelp](https://github.com/skywind3000/RenderHelp)：另外一个支持可编程渲染管线的精简软渲染器实现，详细见 [介绍](https://zhuanlan.zhihu.com/p/182872172)。
 
-## 欢迎捐赠
-
-![](https://raw.githubusercontent.com/skywind3000/mini3d/master/images/donation.png)
-
-您的捐助是对该教程的最大肯定，欢迎使用支付宝手扫描上面的二维码，进行捐赠。捐赠款项将用于完善教程文档和图例，以及帮助我写出更多有意思的教程来。
 
 
 
